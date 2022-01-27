@@ -3,7 +3,7 @@ import React from 'react';
 import {useRouter} from 'next/router';
 import appConfig from '../config.json';
 
-function Titulo(props) {
+function Title(props) {
   const Tag = props.tag || 'h1';
   return (
     <>
@@ -24,7 +24,7 @@ function Titulo(props) {
 //   return (
 //     <div>
 //       <GlobalStyle />
-//       <Titulo tag="h2">Boas vindas de volta!</Titulo>
+//       <Title tag="h2">Boas vindas de volta!</Title>
 //       <h2>Discord - Sana Natividade</h2>
 //     </div>
 //   )
@@ -32,9 +32,12 @@ function Titulo(props) {
 // export default HomePage
 
 export default function PaginaInicial() {
-  // const username = 'natividadesusana';
+  //Rook para atualizar os dados
   const [username, setUsername] = React.useState('natividadesusana');
-  const roteamento = useRouter();
+  //username recebe o nome do usuário
+  //setUserName é a função para alterar o valor de username, em qualquer lugar que username é chamado
+  const validateInput = username.length > 2
+  const router = useRouter();
 
   return (
     <>
@@ -57,25 +60,23 @@ export default function PaginaInicial() {
             width: '100%', maxWidth: '700px',
             borderRadius: '5px', padding: '32px', margin: '16px',
             boxShadow: '0 2px 10px 0 rgb(0 0 0 / 20%)',
-            backgroundColor: appConfig.theme.colors.neutrals[999],
+            backgroundColor: appConfig.theme.colors.neutrals[100],
           }}
         >
           {/* Formulário */}
           <Box
             as="form"
-            onSubmit={function (infosDoEvento) {
-              infosDoEvento.preventDefault();
-              console.log('Alguém submeteu o form');
-              roteamento.push('/chat');
-              // window.location.href = '/chat';
+            onSubmit={function (event) { //Ao submeter o formulário...
+              event.preventDefault() //Previna o comportamento padrão de enviar os dados
+              router.push('/chat') //Adicione a página do chat na pilha de rotas
             }}
             styleSheet={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
               width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '32px',
             }}
           >
-            <Titulo tag="h2">Welcome Back!</Titulo>
-            <Text variant="body3" styleSheet={{ marginBottom: '32px', color: appConfig.theme.colors.neutrals[300]}}>
+            <Title tag="h2">Welcome Back!</Title>
+            <Text variant="body3" styleSheet={{ marginBottom: '32px', color: appConfig.theme.colors.neutrals[200]}}>
               {appConfig.name}
             </Text>
 
@@ -91,23 +92,20 @@ export default function PaginaInicial() {
                 setUsername(valor);
               }}
             /> */}
+
             <TextField
-              value={username}
-              onChange={function (event) {
-                console.log('usuario digitou', event.target.value);
-                 // Onde ta o valor?
-                 const valor = event.target.value;
-                 // Trocar o valor da variavel
-                 // através do React e avise quem precisa
-                 setUsername(valor);
-               }}
+            value={username} //Valor inicial do input é a variavel username
+            onChange={function (event) {//Quando o input for alterado...
+              const newValue = event.target.value;//Guarda o valor que o usuário está digitando em uma variável
+              setUsername(newValue)//Altera o valor de username para a variavel acima, toda vez que o input muda
+            }}
               fullWidth
               textFieldColors={{
                 neutral: {
                   textColor: appConfig.theme.colors.neutrals[200],
-                  mainColor: appConfig.theme.colors.neutrals[900],
-                  mainColorHighlight: appConfig.theme.colors.primary[500],
-                  backgroundColor: appConfig.theme.colors.neutrals[800],
+                  mainColor: appConfig.theme.colors.neutrals[600],
+                  mainColorHighlight: appConfig.theme.colors.primary[200],
+                  backgroundColor: appConfig.theme.colors.neutrals[100],
                 },
               }}
             />
@@ -117,9 +115,9 @@ export default function PaginaInicial() {
               fullWidth
               buttonColors={{
                 contrastColor: appConfig.theme.colors.neutrals["000"],
-                mainColor: appConfig.theme.colors.neutrals[500],
+                mainColor: appConfig.theme.colors.neutrals[100],
                 mainColorLight: appConfig.theme.colors.primary[400],
-                mainColorStrong: appConfig.theme.colors.primary[600],
+                mainColorStrong: appConfig.theme.colors.neutrals[700],
               }}
             />
           </Box>
@@ -134,9 +132,9 @@ export default function PaginaInicial() {
               alignItems: 'center',
               maxWidth: '200px',
               padding: '16px',
-              backgroundColor: appConfig.theme.colors.neutrals[800],
+              backgroundColor: appConfig.theme.colors.neutrals[100],
               border: '1px solid',
-              borderColor: appConfig.theme.colors.neutrals[999],
+              borderColor: appConfig.theme.colors.neutrals[400],
               borderRadius: '10px',
               flex: 1,
               minHeight: '240px',
@@ -147,15 +145,23 @@ export default function PaginaInicial() {
                 borderRadius: '50%',
                 marginBottom: '16px',
               }}
-              src={`https://github.com/${username}.png`}
+              src={validateInput ? `https://github.com/${username}.png`: ""}
+               //Se o input ter mais que 2 caracteres, mostra a foto, se não, não mostra nada.
+              //Como username sempre é atualizado quando o input muda, essa verificação sempre é feita
             />
             <Text
               variant="body4"
+              tag= {validateInput ? "a" : "span"}//Se o campo tiver mais que 2 caracteres é um link, se não um span
+              target="_blank"
+              href={`https://github.com/${username}`}
               styleSheet={{
                 color: appConfig.theme.colors.neutrals[200],
-                backgroundColor: appConfig.theme.colors.neutrals[900],
+                backgroundColor: appConfig.theme.colors.primary[999],
+                border: '1px solid',
+                borderColor: appConfig.theme.colors.neutrals[400],
+                borderRadius: '10px',                               
                 padding: '3px 10px',
-                borderRadius: '1000px'
+                borderRadius: '1000px',
               }}
             >
               {username}
