@@ -1,6 +1,6 @@
 function GlobalStyle() {
-    return (
-      <style global jsx>{`
+  return (
+    <style global jsx>{`
           * {
             margin: 0;
             padding: 0;
@@ -24,15 +24,15 @@ function GlobalStyle() {
           }
           /* ./App fit Height */ 
         `}</style>
-    );
-  }
+  );
+}
 
-export default function CustomApp({ Component, pageProps}) {
-    console.log('Roda em todas as páginas!');
-    return (
-        <>
-        <GlobalStyle />
-        <Component {...pageProps} />
-        </>
-    );
+export default function CustomApp({ Component, pageProps }) {
+  console.log('Roda em todas as páginas!');
+  return (
+    <>
+      <GlobalStyle />
+      <Component {...pageProps} />
+    </>
+  );
 }

@@ -1,6 +1,6 @@
 import { Box, Button, Text, TextField, Image } from '@skynexui/components';
 import React from 'react';
-import {useRouter} from 'next/router';
+import { useRouter } from 'next/router';
 import appConfig from '../config.json';
 
 function Title(props) {
@@ -76,7 +76,7 @@ export default function PaginaInicial() {
             }}
           >
             <Title tag="h2">Welcome Back!</Title>
-            <Text variant="body3" styleSheet={{ marginBottom: '32px', color: appConfig.theme.colors.neutrals[200]}}>
+            <Text variant="body3" styleSheet={{ marginBottom: '32px', color: appConfig.theme.colors.neutrals[200] }}>
               {appConfig.name}
             </Text>
 
@@ -94,11 +94,11 @@ export default function PaginaInicial() {
             /> */}
 
             <TextField
-            value={username} //Valor inicial do input é a variavel username
-            onChange={function (event) {//Quando o input for alterado...
-              const newValue = event.target.value;//Guarda o valor que o usuário está digitando em uma variável
-              setUsername(newValue)//Altera o valor de username para a variavel acima, toda vez que o input muda
-            }}
+              value={username} //Valor inicial do input é a variavel username
+              onChange={function (event) {//Quando o input for alterado...
+                const newValue = event.target.value;//Guarda o valor que o usuário está digitando em uma variável
+                setUsername(newValue)//Altera o valor de username para a variavel acima, toda vez que o input muda
+              }}
               fullWidth
               textFieldColors={{
                 neutral: {
@@ -145,13 +145,13 @@ export default function PaginaInicial() {
                 borderRadius: '50%',
                 marginBottom: '16px',
               }}
-              src={validateInput ? `https://github.com/${username}.png`: ""}
-               //Se o input ter mais que 2 caracteres, mostra a foto, se não, não mostra nada.
-              //Como username sempre é atualizado quando o input muda, essa verificação sempre é feita
+              src={validateInput ? `https://github.com/${username}.png` : ""}
+            //Se o input ter mais que 2 caracteres, mostra a foto, se não, não mostra nada.
+            //Como username sempre é atualizado quando o input muda, essa verificação sempre é feita
             />
             <Text
               variant="body4"
-              tag= {validateInput ? "a" : "span"}//Se o campo tiver mais que 2 caracteres é um link, se não um span
+              tag={validateInput ? "a" : "span"}//Se o campo tiver mais que 2 caracteres é um link, se não um span
               target="_blank"
               href={`https://github.com/${username}`}
               styleSheet={{
@@ -159,7 +159,7 @@ export default function PaginaInicial() {
                 backgroundColor: appConfig.theme.colors.primary[999],
                 border: '1px solid',
                 borderColor: appConfig.theme.colors.neutrals[400],
-                borderRadius: '10px',                               
+                borderRadius: '10px',
                 padding: '3px 10px',
                 borderRadius: '1000px',
               }}
