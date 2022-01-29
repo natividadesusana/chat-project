@@ -1,10 +1,40 @@
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
+import { createClient } from '@supabase/supabase-js'
+
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzQ3OTY1MywiZXhwIjoxOTU5MDU1NjUzfQ.DM8M610mzswaalPq8drvePj_JwROj0K1M-1tHcJRSrI';
+const SUPABASE_URL = 'https://lffitukqrbtbypnmxnnk.supabase.co';
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// fetch(`${SUPABASE_URL}/rest/v1/mensagens?select=*,` {
+//      headers: {
+//        'Content-Type': 'application/json',
+//        'apikey': SUPABASE_ANON_KEY,
+//        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+//      }
+// })
+//      .then((res) => {
+//          return res.json();
+//      })
+//      .then((response) => {
+//          console.log(response);
+//      });
 
 export default function ChatPage() {
     const [mensagem, setMensagem] = React.useState();
     const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
+
+    React.useEffect(() => {
+        supabaseClient
+            .from('mensagens')
+            .select('*')
+            .order('id', { ascending: false })
+            .then(({ data }) => {
+                console.log('Dados da consulta:', data);
+                setListaDeMensagens(data);
+            });
+    }, []);
 
     /*
     // Usuário
@@ -20,14 +50,25 @@ export default function ChatPage() {
     */
     function handleNovaMensagem(novaMensagem) {
         const mensagem = {
-            id: listaDeMensagens.length + 1,
+            // id: listaDeMensagens.length + 1,
             de: 'natividadesusana',
             texto: novaMensagem,
         };
-        setListaDeMensagens([
-            mensagem,
-            ...listaDeMensagens,
-        ]);
+
+        supabaseClient
+            .from('mensagens')
+            .insert([
+                // Tem que ser um objeto com os MESMOS CAMPOS que você escreveu no supabase
+                mensagem
+            ])
+            .then(({ data }) => {
+                console.log('Criando mensagem: ', data);
+                setListaDeMensagens([
+                    data[0],
+                    ...listaDeMensagens,
+                ]);
+            })
+
         setMensagem('');
     }
 
@@ -36,7 +77,7 @@ export default function ChatPage() {
             styleSheet={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 backgroundColor: appConfig.theme.colors.primary[500],
-                backgroundImage: `url(https://virtualbackgrounds.site/wp-content/uploads/2020/08/the-matrix-digital-rain.jpg)`,
+                backgroundImage: 'url(https://wallpapercave.com/wp/wp4676582.jpg)',
                 backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundBlendMode: 'multiply',
                 color: appConfig.theme.colors.neutrals['000']
             }}
@@ -47,8 +88,8 @@ export default function ChatPage() {
                     flexDirection: 'column',
                     flex: 1,
                     boxShadow: '0 2px 10px 0 rgb(0 0 0 / 20%)',
-                    borderRadius: '5px',
-                    backgroundColor: appConfig.theme.colors.neutrals[700],
+                    borderRadius: '10px',
+                    backgroundColor: appConfig.theme.colors.neutrals[100],
                     height: '100%',
                     maxWidth: '95%',
                     maxHeight: '95vh',
@@ -62,13 +103,14 @@ export default function ChatPage() {
                         display: 'flex',
                         flex: 1,
                         height: '80%',
-                        backgroundColor: appConfig.theme.colors.neutrals[600],
+                        backgroundColor: appConfig.theme.colors.neutrals[100],
                         flexDirection: 'column',
                         borderRadius: '5px',
                         padding: '16px',
                     }}
-                >
+                >          
                     <MessageList mensagens={listaDeMensagens} />
+                    
                     {/* {listaDeMensagens.map((mensagemAtual) => {
                         return (
                                 <li key={mensagemAtual.id}>
@@ -102,10 +144,10 @@ export default function ChatPage() {
                                 border: '0',
                                 resize: 'none',
                                 borderRadius: '5px',
-                                padding: '6px 8px',
-                                backgroundColor: appConfig.theme.colors.neutrals[800],
+                                padding: '15px 8px',
                                 marginRight: '12px',
-                                color: appConfig.theme.colors.neutrals[200],
+                                backgroundColor: appConfig.theme.colors.neutrals[700],                                
+                                color: appConfig.theme.colors.neutrals[400],
                             }}
                         />
                         <Button styleSheet={{
@@ -116,7 +158,7 @@ export default function ChatPage() {
                             padding: '12px 20px',
                         }}
                             variant='secondary'
-                            colorVariant='light'
+                            colorVariant='primary'
                             label='Ok'
                             onClick={(event) => {
                                 event.preventDefault();
@@ -134,7 +176,7 @@ function Header() {
     return (
         <>
             <Box styleSheet={{ width: '100%', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} >
-                <Text variant='heading5'>
+                <Text variant='heading3'>
                     Chat
                 </Text>
                 <Button
@@ -154,7 +196,7 @@ function MessageList(props) {
         <Box
             tag="ul"
             styleSheet={{
-                overflow: 'scroll',
+                overflow: 'auto',
                 display: 'flex',
                 flexDirection: 'column-reverse',
                 flex: 1,
@@ -189,7 +231,7 @@ function MessageList(props) {
                                     display: 'inline-block',
                                     marginRight: '8px',
                                 }}
-                                src={`https://github.com/natividadesusana.png`}
+                                src={`https://github.com/${mensagem.de}.png`}
                             />
                             <Text tag="strong">
                                 {mensagem.de}

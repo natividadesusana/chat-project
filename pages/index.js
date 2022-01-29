@@ -104,7 +104,7 @@ export default function PaginaInicial() {
                 neutral: {
                   textColor: appConfig.theme.colors.neutrals[200],
                   mainColor: appConfig.theme.colors.neutrals[600],
-                  mainColorHighlight: appConfig.theme.colors.primary[200],
+                  mainColorHighlight: appConfig.theme.colors.primary[500],
                   backgroundColor: appConfig.theme.colors.neutrals[100],
                 },
               }}
@@ -115,8 +115,8 @@ export default function PaginaInicial() {
               fullWidth
               buttonColors={{
                 contrastColor: appConfig.theme.colors.neutrals["000"],
-                mainColor: appConfig.theme.colors.neutrals[100],
-                mainColorLight: appConfig.theme.colors.primary[400],
+                mainColor: appConfig.theme.colors.neutrals[600],
+                mainColorLight: appConfig.theme.colors.primary[100],
                 mainColorStrong: appConfig.theme.colors.neutrals[700],
               }}
             />
