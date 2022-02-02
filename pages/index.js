@@ -33,7 +33,7 @@ function Title(props) {
 
 export default function PaginaInicial() {
   //Rook para atualizar os dados
-  const [username, setUsername] = React.useState('natividadesusana');
+  const [username, setUsername] = React.useState('');
   //username recebe o nome do usuário
   //setUserName é a função para alterar o valor de username, em qualquer lugar que username é chamado
   const validateInput = username.length > 2
@@ -68,7 +68,7 @@ export default function PaginaInicial() {
             as="form"
             onSubmit={function (event) { //Ao submeter o formulário...
               event.preventDefault() //Previna o comportamento padrão de enviar os dados
-              router.push('/chat') //Adicione a página do chat na pilha de rotas
+              router.push(`/chat?username=${username}`) //Adicione a página do chat na pilha de rotas
             }}
             styleSheet={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
@@ -99,12 +99,13 @@ export default function PaginaInicial() {
                 const newValue = event.target.value;//Guarda o valor que o usuário está digitando em uma variável
                 setUsername(newValue)//Altera o valor de username para a variavel acima, toda vez que o input muda
               }}
+              placeholder='Digite o seu usuário do Github...'
               fullWidth
               textFieldColors={{
                 neutral: {
-                  textColor: appConfig.theme.colors.neutrals[200],
-                  mainColor: appConfig.theme.colors.neutrals[600],
-                  mainColorHighlight: appConfig.theme.colors.primary[500],
+                  textColor: appConfig.theme.colors.neutrals["000"],
+                  mainColor: appConfig.theme.colors.primary[500],
+                  mainColorHighlight: appConfig.theme.colors.neutrals["000"],
                   backgroundColor: appConfig.theme.colors.neutrals[100],
                 },
               }}
@@ -115,9 +116,9 @@ export default function PaginaInicial() {
               fullWidth
               buttonColors={{
                 contrastColor: appConfig.theme.colors.neutrals["000"],
-                mainColor: appConfig.theme.colors.neutrals[600],
+                mainColor: appConfig.theme.colors.neutrals[100],
                 mainColorLight: appConfig.theme.colors.primary[100],
-                mainColorStrong: appConfig.theme.colors.neutrals[700],
+                mainColorStrong: appConfig.theme.colors.primary[500],
               }}
             />
           </Box>
@@ -145,7 +146,7 @@ export default function PaginaInicial() {
                 borderRadius: '50%',
                 marginBottom: '16px',
               }}
-              src={validateInput ? `https://github.com/${username}.png` : ""}
+              src={validateInput ? `https://github.com/${username}.png` : 'https://i.pinimg.com/originals/11/8e/6f/118e6f39fac9344d6589c84d5ee9e667.png'}
             //Se o input ter mais que 2 caracteres, mostra a foto, se não, não mostra nada.
             //Como username sempre é atualizado quando o input muda, essa verificação sempre é feita
             />
@@ -164,7 +165,7 @@ export default function PaginaInicial() {
                 borderRadius: '1000px',
               }}
             >
-              {username}
+              {username || "GitHub"}
             </Text>
           </Box>
           {/* Photo Area */}

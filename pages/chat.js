@@ -1,28 +1,29 @@
-import { Box, Text, TextField, Image, Button } from '@skynexui/components';
+import { Box, Text, TextField, Image, Button, Icon } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
-import { createClient } from '@supabase/supabase-js'
+import { useRouter } from 'next/router';
+import { createClient } from '@supabase/supabase-js';
+import { ButtonSendSticker } from '../src/components/ButtonSendSticker';
 
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzQ3OTY1MywiZXhwIjoxOTU5MDU1NjUzfQ.DM8M610mzswaalPq8drvePj_JwROj0K1M-1tHcJRSrI';
 const SUPABASE_URL = 'https://lffitukqrbtbypnmxnnk.supabase.co';
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// fetch(`${SUPABASE_URL}/rest/v1/mensagens?select=*,` {
-//      headers: {
-//        'Content-Type': 'application/json',
-//        'apikey': SUPABASE_ANON_KEY,
-//        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-//      }
-// })
-//      .then((res) => {
-//          return res.json();
-//      })
-//      .then((response) => {
-//          console.log(response);
-//      });
+function escutaMensagensEmTempoReal(adicionaMensagem) {
+    return supabaseClient
+        .from('mensagens')
+        .on('INSERT', (respostaLive) => {
+            adicionaMensagem(respostaLive.new);
+        })
+        .subscribe();
+}
 
 export default function ChatPage() {
-    const [mensagem, setMensagem] = React.useState();
+    const router = useRouter();
+    const usuarioLogado = router.query.username;
+    // console.log('router.query'.router.query);
+    // console.log('usuarioLogado', usuarioLogado);
+    const [mensagem, setMensagem] = React.useState('');
     const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
 
     React.useEffect(() => {
@@ -31,27 +32,31 @@ export default function ChatPage() {
             .select('*')
             .order('id', { ascending: false })
             .then(({ data }) => {
-                console.log('Dados da consulta:', data);
+                // console.log('Dados da consulta:', data);
                 setListaDeMensagens(data);
             });
+
+        const subscription = escutaMensagensEmTempoReal((novaMensagem) => {
+            console.log('Nova mensagem:', novaMensagem);
+            console.log('listaDeMensagens:', listaDeMensagens);
+            setListaDeMensagens((valorAtualDaLista) => {
+                console.log('valorAtualDaLista:', valorAtualDaLista);
+                return [
+                    novaMensagem,
+                    ...valorAtualDaLista,
+                ]
+            });
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        }
     }, []);
 
-    /*
-    // Usuário
-    - Usuário digita no campo textaea
-    - Aperta enter para enviar
-    - Tem que adicionar o texto na listagem
-
-    //Dev
-    - [X] Campo criado
-    - [X] Vamos usar o onChange usa o useState (ter if pra caso seja enter limpar a variável)
-    - [X] Lista de mensagens
-
-    */
     function handleNovaMensagem(novaMensagem) {
         const mensagem = {
             // id: listaDeMensagens.length + 1,
-            de: 'natividadesusana',
+            de: usuarioLogado,
             texto: novaMensagem,
         };
 
@@ -63,22 +68,31 @@ export default function ChatPage() {
             ])
             .then(({ data }) => {
                 console.log('Criando mensagem: ', data);
-                setListaDeMensagens([
-                    data[0],
-                    ...listaDeMensagens,
-                ]);
-            })
+            });
 
         setMensagem('');
+    }
+
+    function handleDeletaMensagem(mensagemAtual) {
+        supabaseClient
+            .from("mensagens")
+            .delete()
+            .match({ id: mensagemAtual.id })
+            .then(({ data }) => {
+                const listaDeMensagensFiltrada = listaDeMensagens.filter((mensagem) => {
+                    return mensagem.id != data[0].id;
+                });
+                setListaDeMensagens(listaDeMensagensFiltrada);
+            });
     }
 
     return (
         <Box
             styleSheet={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                backgroundColor: appConfig.theme.colors.primary[500],
-                backgroundImage: 'url(https://wallpapercave.com/wp/wp4676582.jpg)',
-                backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundBlendMode: 'multiply',
+                backgroundColor: appConfig.theme.colors.neutrals[200],
+                backgroundImage: `url(https://wallpapercave.com/wp/wp4676582.jpg)`,
+                backgroundRepeat: 'no-repeat', backgroundSize: 'cover',
                 color: appConfig.theme.colors.neutrals['000']
             }}
         >
@@ -108,9 +122,11 @@ export default function ChatPage() {
                         borderRadius: '5px',
                         padding: '16px',
                     }}
-                >          
-                    <MessageList mensagens={listaDeMensagens} />
-                    
+                >
+                    <MessageList
+                        mensagens={listaDeMensagens}
+                        handleDeletaMensagem={handleDeletaMensagem}
+                    />
                     {/* {listaDeMensagens.map((mensagemAtual) => {
                         return (
                                 <li key={mensagemAtual.id}>
@@ -146,20 +162,34 @@ export default function ChatPage() {
                                 borderRadius: '5px',
                                 padding: '15px 8px',
                                 marginRight: '12px',
-                                backgroundColor: appConfig.theme.colors.neutrals[700],                                
-                                color: appConfig.theme.colors.neutrals[400],
+                                backgroundColor: appConfig.theme.colors.primary[800],
+                                color: appConfig.theme.colors.neutrals["000"],
+                            }}
+                        />
+                        {/* CallBack */}
+                        <ButtonSendSticker
+                            onStickerClick={(sticker) => {
+                                // console.log('[USANDO O COMPONENTE] Salva esse sticker no banco', sticker);
+                                handleNovaMensagem(':sticker: ' + sticker);
                             }}
                         />
                         <Button styleSheet={{
-                            marginBottom: '10px',
+                            borderRadius: '50%',
+                            minWidth: '50px',
+                            minHeight: '50px',
+                            fontSize: '20px',
+                            marginBottom: '8px',
+                            margin: '5px',
+                            lineHeight: '',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'space-between',
-                            padding: '12px 20px',
+                            justifyContent: 'center',
                         }}
+                            iconName="FaPaperPlane"
+                            type="button"
                             variant='secondary'
-                            colorVariant='primary'
-                            label='Ok'
+                            colorVariant='positive'
+
                             onClick={(event) => {
                                 event.preventDefault();
                                 handleNovaMensagem(mensagem);
@@ -176,8 +206,8 @@ function Header() {
     return (
         <>
             <Box styleSheet={{ width: '100%', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} >
-                <Text variant='heading3'>
-                    Chat
+                <Text variant='heading4'>
+                    CHAT
                 </Text>
                 <Button
                     variant='secondary'
@@ -191,7 +221,9 @@ function Header() {
 }
 
 function MessageList(props) {
-    console.log(props);
+    console.log("MessageList", props);
+
+    const handleDeletaMensagem = props.handleDeletaMensagem;
     return (
         <Box
             tag="ul"
@@ -214,7 +246,7 @@ function MessageList(props) {
                             padding: '6px',
                             marginBottom: '12px',
                             hover: {
-                                backgroundColor: appConfig.theme.colors.neutrals[700],
+                                backgroundColor: appConfig.theme.colors.neutrals[100],
                             }
                         }}
                     >
@@ -240,17 +272,48 @@ function MessageList(props) {
                                 styleSheet={{
                                     fontSize: '10px',
                                     marginLeft: '8px',
-                                    color: appConfig.theme.colors.neutrals[300],
+                                    color: appConfig.theme.colors.neutrals[200],
                                 }}
                                 tag="span"
                             >
                                 {new Date().toLocaleDateString("pt-br", { hour: "numeric", minute: "numeric", second: "numeric" })}
                             </Text>
+
+                            <Icon
+                                name={"FaTrash"}
+                                styleSheet={{
+                                    marginLeft: "12px",
+                                    width: "15px",
+                                    height: "15px",
+                                    color: appConfig.theme.colors.primary["100"],
+                                    hover: {
+                                        color: "orange",
+                                    },
+                                    display: "inline-block",
+                                }}
+                                onClick={(event) => {
+                                    event.preventDefault();
+                                    handleDeletaMensagem(mensagem);
+                                }}
+                            />
+
                         </Box>
-                        {mensagem.texto}
+
+                        {mensagem.texto.startsWith(':sticker:')
+                                ? (
+                                    <Image src={mensagem.texto.replace(':sticker:', '')} />
+                                )
+                                : (
+                                    mensagem.texto
+                                )}
+                        {/* if mensagem de texto possui stickers:
+                           mostra a imagem
+                        else 
+                           mensagem.texto */}
+                        {/* {mensagem.texto} */}
                     </Text>
                 );
             })}
         </Box>
-    )
+    );
 }
