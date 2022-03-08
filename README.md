@@ -2,3 +2,5 @@
 
 # AluraCord
 *Projeto desenvolvido em Imersão React com a [@alura](https://github.com/alura) [@omariosouto](https://github.com/omariosouto) [@peas](https://github.com/peas)* ~
+
+O projeto consiste no desenvolvimento de uma pequena aplicação de um chat, utilizando React e NextJS, com dados da api do GitHub, fazendo deploy na plataforma Vercel, e armazenando dados do chat no Supabase.
