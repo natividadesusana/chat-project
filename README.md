@@ -1,6 +1,6 @@
 ![image](https://user-images.githubusercontent.com/95102911/151038459-394a126a-c5c7-4e0f-b6a4-1c823ac9d63e.png)
 
 # ProjectChat - Alura
-*Projeto desenvolvido em Imersão React com a [@alura](https://github.com/alura) [@omariosouto](https://github.com/omariosouto) [@peas](https://github.com/peas)* ~
+*Project developed in React Immersion with the [@alura](https://github.com/alura) [@omariosouto](https://github.com/omariosouto) [@peas](https://github.com/peas)* ~
 
-*O projeto consiste no desenvolvimento de uma pequena aplicação de um chat, utilizando React e NextJS, com dados da api do GitHub, fazendo deploy na plataforma Vercel, e armazenando dados do chat no Supabase.*
+*The project consists of developing a small chat application, using React and NextJS, with data from the GitHub api, deploying it on the Vercel platform, and storing the chat data on Supabase.*
